@@ -10,9 +10,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,8 +17,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/books")
 @Tag(name = "Books", description = "Операции с книгами")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
 @ApiResponse(responseCode = "" + HttpServletResponse.SC_INTERNAL_SERVER_ERROR, description = "Внутренняя ошибка сервера")
 public interface BookController {
 

@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 public class BookServiceImpl implements BookService {
 
-    private List<Book> books = new ArrayList<>();
+    private final List<Book> books = new ArrayList<>();
     private Integer idBook = 1;
 
     @Override
@@ -22,7 +22,15 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book getBookById(Integer id) {
-        return existsById(id);
+        if (id == null) {
+            throw new ApiException("id не передан", HttpServletResponse.SC_BAD_REQUEST);
+        }
+        for (Book book : books) {
+            if (book.getId().equals(id)) {
+                return book;
+            }
+        }
+        throw new ApiException("Книга не найдена", HttpServletResponse.SC_NOT_FOUND);
     }
 
     @Override
@@ -35,41 +43,26 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book update(Integer id, Book book) {
-        existsById(id);
-        Book oldBook = existsById(id);
-        book.setId(oldBook.getId());
-        if (book.getTitle() == null || book.getTitle().isBlank()) {
-            book.setTitle(oldBook.getTitle());
+        Book oldBook = getBookById(id);
+        if (book.getTitle() != null && !book.getTitle().isBlank()) {
+            oldBook.setTitle(book.getTitle());
         }
-        if (book.getAuthor() == null || book.getAuthor().isBlank()) {
-            book.setAuthor(oldBook.getAuthor());
+        if (book.getAuthor() != null && !book.getAuthor().isBlank()) {
+            oldBook.setAuthor(book.getAuthor());
         }
-        if (book.getDescription() == null || book.getDescription().isBlank()) {
-            book.setDescription(oldBook.getDescription());
+        if (book.getDescription() != null && !book.getDescription().isBlank()) {
+            oldBook.setDescription(book.getDescription());
         }
-        if (book.getPrice() == null) {
-            book.setPrice(oldBook.getPrice());
+        if (book.getPrice() != null) {
+            oldBook.setPrice(book.getPrice());
         }
-        books.set(books.indexOf(oldBook), book);
-        return book;
+        return oldBook;
     }
 
     @Override
     public void deleteById(Integer id) {
-        Book book = existsById(id);
+        Book book = getBookById(id);
         books.remove(book);
-    }
-
-    private Book existsById(Integer id) {
-        if (id == null) {
-            throw new ApiException("id не передан", HttpServletResponse.SC_BAD_REQUEST);
-        }
-        for (Book book : books) {
-            if (book.getId().equals(id)) {
-                return book;
-            }
-        }
-        throw new ApiException("Книга не найдена", HttpServletResponse.SC_NOT_FOUND);
     }
 
     private void checkParam(Book book) {
